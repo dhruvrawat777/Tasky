@@ -1,8 +1,10 @@
 const taskContainer = document.querySelector('.task__container');
-console.log(taskContainer);
+//console.log(taskContainer);
 
+//Global Store
+const globalStore = [];
 
-const newCard = ({id,imageUrl,taskTitle,taskDescription,taskType})=>`
+const newCard = ({ id, imageUrl, taskTitle, taskDescription, taskType }) => `
 <div class="col-md-4 lg-6" id=${id}>
 <div class="card text-center">
     <div class="card-header d-flex justify-content-end gap-2">
@@ -28,6 +30,22 @@ const newCard = ({id,imageUrl,taskTitle,taskDescription,taskType})=>`
 </div>
 `;
 
+const loadInitialTaskCards=()=>{
+    const getInitialData=localStorage.getItem('taskly');
+    if(!getInitialData){
+        return;
+    }
+    const {cards}=JSON.parse(getInitialData);
+    cards.map((card)=>{
+        const createNewCard=newCard(card);
+        taskContainer.insertAdjacentHTML("beforeend",createNewCard);
+        globalStore.push(card);
+    })
+
+}
+
+
+
 const saveChanges = () => {
     const taskData = {
         id: `${Date.now()}`,
@@ -36,7 +54,9 @@ const saveChanges = () => {
         taskType: document.getElementById('tasktype').value,
         taskDescription: document.getElementById('taskdescription').value,
     }
-    console.log(taskData);
-    const createNewCard=newCard(taskData);
+    //console.log(taskData);
+    const createNewCard = newCard(taskData);
     taskContainer.insertAdjacentHTML("beforeend", createNewCard);
+    globalStore.push(taskData);
+    localStorage.setItem("taskly", JSON.stringify({ cards: globalStore }));
 };
